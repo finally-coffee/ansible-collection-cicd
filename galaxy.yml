@@ -1,0 +1,15 @@
+namespace: finallycoffee
+name: cicd
+version: "0.0.1"
+readme: README.md
+authors:
+  - transcaffeine <transcaffeine@finally.coffee>
+description: Services for continous integration and continous delivery
+dependencies:
+  "community.docker": "^4.0.0"
+license_file: LICENSE.md
+build_ignore:
+  - '*.tar.gz'
+repository: https://git.finally.coffee/finallycoffee/cicd
+issues: https://codeberg.org/finallycoffee/ansible-collection-cicd/issues
+tags: []
