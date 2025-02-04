@@ -1,0 +1,40 @@
+---
+- name: Ensure jenkins container image '{{ jenkins_container_image }}' is {{ jenkins_state }}
+  community.docker.docker_image:
+    name: "{{ jenkins_container_image }}"
+    state: "{{ jenkins_state }}"
+    source: "{{ jenkins_container_image_source }}"
+    force_source: "{{ jenkins_container_image_force_source }}"
+
+- name: Ensure jenkins configuration folder is created
+  ansible.builtin.file:
+    path: "{{ jenkins_etc_passwd_shim_path | dirname }}"
+    state: directory
+    mode: "0755"
+    owner: "root"
+    group: "root"
+  when: jenkins_state == 'present'
+
+- name: Ensure jenkins fake '/etc/passwd' is created
+  ansible.builtin.template:
+    src: "docker-passwd.j2"
+    dest: "{{ jenkins_etc_passwd_shim_path }}"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+  when: jenkins_state == 'present'
+  notify:
+    - jenkins_restart
+
+- name: Ensure jenkins container '{{ jenkins_container_name }}' is {{ jenkins_container_state }}
+  community.docker.docker_container:
+    name: "{{ jenkins_container_name }}"
+    image: "{{ jenkins_container_image }}"
+    env: "{{ jenkins_container_env | default(omit, true) }}"
+    user: "{{ jenkins_container_user | default(omit, true) }}"
+    ports: "{{ jenkins_container_ports | default(omit, true) }}"
+    labels: "{{ jenkins_container_labels | default(omit, true) }}"
+    networks: "{{ jenkins_container_networks | default(omit, true) }}"
+    volumes: "{{ jenkins_container_all_volumes }}"
+    restart_policy: "{{ jenkins_container_restart_policy }}"
+    state: "{{ jenkins_container_state }}"

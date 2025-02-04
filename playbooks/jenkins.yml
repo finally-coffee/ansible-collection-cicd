@@ -1,0 +1,6 @@
+---
+- name: Install and configure jenkins
+  hosts: "{{ jenkins_hosts | default('jenkins', true) }}"
+  become: "{{ jenkins_become | default(true, true) }}"
+  roles:
+    - role: finallycoffee.cicd.jenkins

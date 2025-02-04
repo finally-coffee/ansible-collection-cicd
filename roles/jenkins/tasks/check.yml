@@ -1,0 +1,21 @@
+---
+- name: Ensure 'jenkins_state' is valid
+  ansible.builtin.fail:
+    msg: >-2
+      Unsupported jenkins_state '{{ jenkins_state }}'.
+      Supported values are: {{ jenkins_states | join(', ') }}
+  when: jenkins_state not in jenkins_states
+
+- name: Ensure 'jenkins_deployment_method' is valid
+  ansible.builtin.fail:
+    msg: >-2
+      Unsupported jenkins_deployment_method '{{ jenkins_deployment_method }}'.
+      Supported values are: {{ jenkins_deployment_methods | join(', ') }}
+  when: jenkins_deployment_method not in jenkins_deployment_methods
+
+- name: Ensure 'jenkins_version_channel' is valid
+  ansible.builtin.fail:
+    msg: >-2
+      Unsupported jenkins_version_channel '{{ jenkins_version_channel }}'.
+      Supported values are: {{ jenkins_version_channels | join(', ')  }}
+  when: jenkins_version_channel not in jenkins_version_channels

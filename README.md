@@ -8,6 +8,8 @@ proxies and artifact registries.
 
 ## Roles
 
+- [`jenkins`](roles/jenkins/README.md): Deploy [jenkins](https://jenkins.io), the self-proclaimed 'leading open source automation server'.
+
 ## License
 
 [CNPLv7+](LICENSE.md): Cooperative Nonviolent Public License

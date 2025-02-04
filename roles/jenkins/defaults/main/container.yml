@@ -1,0 +1,59 @@
+---
+jenkins_container_name: "jenkins"
+jenkins_container_image: >-2
+  {{
+    [
+      jenkins_container_image_repository,
+      jenkins_container_image_tag
+        | default(
+          jenkins_version + (
+            ((jenkins_container_image_flavour is string)
+              and (jenkins_container_image_flavour | length > 0))
+            | ternary(
+              '-' + jenkins_container_image_flavour | default('', true),
+              ''
+            )
+          ),
+          true
+        )
+    ] | join(':')
+  }}
+jenkins_container_image_registry: docker.io
+jenkins_container_image_namespace: jenkins
+jenkins_container_image_name: jenkins
+jenkins_container_image_repository: >-2
+  {{
+    [
+      jenkins_container_image_registry | default([], true),
+      jenkins_container_image_namespace | default([], true),
+      jenkins_container_image_name
+    ] | flatten | join('/')
+  }}
+jenkins_container_image_source: "pull"
+jenkins_container_image_force_source: >-2
+  {{ jenkins_container_image_tag | default(true, true) }}
+jenkins_container_image_tag: ~
+jenkins_container_image_flavour: "jdk17"
+
+jenkins_container_env: ~
+jenkins_container_user: >-2
+  {{ jenkins_user_uid }}:{{ jenkins_user_gid }}
+jenkins_container_ports: ~
+jenkins_container_state: >-2
+  {{ (jenkins_state == 'present') | ternary('started', 'absent') }}
+jenkins_container_labels:
+  version: "{{ jenkins_container_image_tag | default(jenkins_version, true) }}"
+jenkins_container_networks: ~
+jenkins_container_etc_hosts: ~
+jenkins_container_base_volumes:
+  - "{{ jenkins_home_path }}:{{ jenkins_container_home_path }}:rw"
+  - "{{ jenkins_etc_passwd_shim_path }}:/etc/passwd:ro"
+jenkins_container_volumes: ~
+jenkins_container_all_volumes: >-2
+  {{ jenkins_container_base_volumes | default([], true)
+     + jenkins_container_volumes | default([], true) }}
+jenkins_container_restart_policy: "on-failure"
+
+# Determined by upstream image
+jenkins_container_home_path: "/var/jenkins_home"
+jenkins_container_tcp_listen_port: "8080"

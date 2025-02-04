@@ -1,0 +1,13 @@
+---
+- name: Restart jenkins container '{{ jenkins_container_name }}'
+  community.docker.docker_container:
+    name: "{{ jenkins_container_name }}"
+    state: "started"
+    restart: true
+    comparisons:
+      '*': "ignore"
+  when:
+    - jenkins_deployment_method == 'docker'
+    - jenkins_container_state == 'started'
+  listen: jenkins_restart
+  ignore_errors: "{{ ansible_check_mode }}"

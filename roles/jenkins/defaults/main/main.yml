@@ -1,0 +1,17 @@
+---
+jenkins_user: "jenkins"
+jenkins_user_is_system: true
+jenkins_user_create_home: false
+jenkins_versions:
+  lts: "2.479.3"
+  weekly: "2.496"
+jenkins_version_channel: "lts"
+jenkins_version: "{{ jenkins_versions[jenkins_version_channel] }}"
+
+jenkins_state: present
+jenkins_deployment_method: docker
+
+jenkins_home_path: "/var/lib/jenkins"
+jenkins_etc_passwd_shim_path: "/etc/jenkins/docker-passwd"
+jenkins_user_uid: "{{ jenkins_user_info.uid }}"
+jenkins_user_gid: "{{ jenkins_user_info.group }}"

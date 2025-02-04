@@ -1,0 +1,26 @@
+---
+- name: Ensure role arguments are valid
+  ansible.builtin.include_tasks:
+    file: "check.yml"
+
+- name: Ensure jenkins user '{{ jenkins_user }}' is {{ jenkins_state }}
+  ansible.builtin.user:
+    name: "{{ jenkins_user }}"
+    state: "{{ jenkins_state }}"
+    system: "{{ jenkins_user_is_system }}"
+    create_home: "{{ jenkins_user_create_home }}"
+  register: jenkins_user_info
+
+- name: Ensure jenkins home '{{ jenkins_home_path }}' is {{ jenkins_state }}
+  ansible.builtin.file:
+    path: "{{ jenkins_home_path }}"
+    state: "{{ (jenkins_state == 'present') | ternary('directory', 'absent') }}"
+    mode: "{{ jenkins_home_path_mode | default('0750', true) }}"
+    owner: "{{ jenkins_user_uid | default(jenkins_user, true) }}"
+    group: "{{ jenkins_user_gid | default(jenkins_user, true) }}"
+  notify:
+    - jenkins_restart
+
+- name: Ensure jenkins is deployed using {{ jenkins_deployment_method }}
+  ansible.builtin.include_tasks:
+    file: "deploy-{{ jenkins_deployment_method }}.yml"

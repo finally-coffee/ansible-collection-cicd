@@ -1,0 +1,8 @@
+---
+jenkins_states:
+  - absent
+  - present
+jenkins_deployment_methods:
+  - docker
+jenkins_version_channels: >-2
+  {{ (jenkins_versions.keys()) | list }}
