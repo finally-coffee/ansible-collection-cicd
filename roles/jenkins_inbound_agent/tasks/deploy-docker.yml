@@ -1,0 +1,58 @@
+---
+- name: Ensure container image '{{ jenkins_agent_container_image }}' is {{ jenkins_agent_state }}
+  community.docker.docker_image:
+    name: "{{ jenkins_agent_container_image }}"
+    state: "{{ jenkins_agent_state }}"
+    source: "{{ jenkins_agent_container_image_source }}"
+    force_source: "{{ jenkins_agent_container_image_force_source }}"
+
+- name: Ensure jenkins configuration directory exists
+  ansible.builtin.file:
+    path: "{{ jenkins_agent_secret_file | dirname }}"
+    state: directory
+    mode: "0755"
+    recurse: true
+  when: jenkins_agent_state == 'present'
+
+- name: Ensure jenkins agent secret is persisted
+  ansible.builtin.copy:
+    dest: "{{ jenkins_agent_secret_file }}"
+    content: "{{ jenkins_agent_secret }}"
+    mode: "0400"
+    owner: "{{ jenkins_agent_user_uid | default(jenkins_agent_user) }}"
+    group: "{{ jenkins_agent_user_gid | default(jenkins_agent_user) }}"
+  when: jenkins_agent_state == 'present'
+  notify:
+    - jenkins_agent_restart
+
+- name: Ensure jenkins agent fake '/etc/passwd' is templated
+  ansible.builtin.template:
+    src: "docker-passwd.j2"
+    dest: "{{ jenkins_agent_passwd_shim_file }}"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+
+- name: Ensure jenkins configuration is removed
+  ansible.builtin.file:
+    path: "{{ jenkins_agent_secret_file | dirname }}"
+    state: absent
+    recurse: true
+  when: jenkins_agent_state == 'absent'
+
+- name: Ensure jenkins-agent container '{{ jenkins_agent_container_name }}' is {{ jenkins_agent_container_state }}
+  community.docker.docker_container:
+    name: "{{ jenkins_agent_container_name }}"
+    image: "{{ jenkins_agent_container_image }}"
+    env: "{{ jenkins_agent_container_all_env | default(omit, true) }}"
+    init: "{{ jenkins_agent_container_init | default(true, true) }}"
+    user: "{{ jenkins_agent_container_user | default(omit, true) }}"
+    ports: "{{ jenkins_agent_container_ports | default(omit, true) }}"
+    labels: "{{ jenkins_agent_container_labels | default(omit, true) }}"
+    volumes: "{{ jenkins_agent_container_all_volumes }}"
+    networks: "{{ jenkins_agent_container_networks | default(omit, true) }}"
+    etc_hosts: "{{ jenkins_agent_container_etc_hosts | default(omit, true) }}"
+    restart_policy: "{{ jenkins_agent_container_restart_policy }}"
+    state: "{{ jenkins_agent_container_state }}"
+    comparisons:
+      "env": "strict"

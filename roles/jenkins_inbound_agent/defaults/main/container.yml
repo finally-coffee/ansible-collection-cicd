@@ -1,0 +1,79 @@
+---
+jenkins_agent_container_name: "jenkins-inbound-agent-{{ jenkins_agent_name }}"
+jenkins_agent_container_image: >-2
+  {{
+    [
+      jenkins_agent_container_image_repository,
+      jenkins_agent_container_image_tag
+        | default(
+          jenkins_agent_version + jenkins_agent_container_suffix,
+          true
+        )
+    ] | join(':')
+  }}
+jenkins_agent_container_image_registry: docker.io
+jenkins_agent_container_image_namespace: jenkins
+jenkins_agent_container_image_name: inbound-agent
+jenkins_agent_container_image_repository: >-2
+  {{
+    [
+      jenkins_agent_container_image_registry | default([], true),
+      jenkins_agent_container_image_namespace | default([], true),
+      jenkins_agent_container_image_name
+    ] | flatten | join('/')
+  }}
+jenkins_agent_container_image_source: "pull"
+jenkins_agent_container_image_force_source: >-2
+  {{ jenkins_agent_container_image_tag | default(true, true) }}
+jenkins_agent_container_image_tag: ~
+jenkins_agent_container_image_jdk_version: "jdk17"
+jenkins_agent_container_image_distribution: "alpine"
+
+jenkins_agent_container_suffix: >-2
+  {{
+    (
+      ((jenkins_agent_container_image_distribution is string)
+        and (jenkins_agent_container_image_distribution | length > 0))
+      | ternary(
+        '-' + jenkins_agent_container_image_distribution | default('', true),
+        ''
+      )
+    )
+    +
+    (
+      ((jenkins_agent_container_image_jdk_version is string)
+        and (jenkins_agent_container_image_jdk_version | length > 0))
+      | ternary(
+        '-' + jenkins_agent_container_image_jdk_version | default('', true),
+        ''
+      )
+    )
+  }}
+
+jenkins_agent_container_env: ~
+jenkins_agent_container_base_env:
+  JENKINS_URL: "{{ jenkins_agent_server_url | ansible.builtin.mandatory }}"
+  JENKINS_AGENT_NAME: "{{ jenkins_agent_name | ansible.builtin.mandatory }}"
+  JENKINS_AGENT_WORKDIR: "{{ jenkins_agent_work_dir | default('/home/jenkins/agent') }}"
+  JENKINS_WEB_SOCKET: "true"
+  JENKINS_SECRET: "@{{ jenkins_agent_secret_file }}"
+jenkins_agent_container_all_env: >-2
+  {{ jenkins_agent_container_base_env
+    | combine(jenkins_agent_container_env | default({}, true)) }}
+jenkins_agent_container_user: >-2
+  {{ jenkins_agent_user_uid }}:{{ jenkins_agent_user_gid }}
+jenkins_agent_container_ports: ~
+jenkins_agent_container_state: >-2
+  {{ (jenkins_agent_state == 'present') | ternary('started', 'absent') }}
+jenkins_agent_container_labels:
+  version: "{{ jenkins_agent_container_image_tag | default(jenkins_agent_version, true) }}"
+jenkins_agent_container_networks: ~
+jenkins_agent_container_etc_hosts: ~
+jenkins_agent_container_base_volumes:
+  - "{{ jenkins_agent_passwd_shim_file }}:/etc/passwd:ro"
+  - "{{ jenkins_agent_secret_file }}:{{ jenkins_agent_secret_file }}:ro"
+jenkins_agent_container_volumes: ~
+jenkins_agent_container_all_volumes: >-2
+  {{ jenkins_agent_container_base_volumes | default([], true)
+     + jenkins_agent_container_volumes | default([], true) }}
+jenkins_agent_container_restart_policy: "on-failure"

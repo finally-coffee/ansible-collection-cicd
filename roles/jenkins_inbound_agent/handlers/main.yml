@@ -1,0 +1,13 @@
+---
+- name: Restart jenkins agent container '{{ jenkins_agent_container_name }}'
+  community.docker.docker_container:
+    name: "{{ jenkins_agent_container_name }}"
+    state: "started"
+    restart: true
+    comparisons:
+      '*': "ignore"
+  listen: jenkins_agent_restart
+  when:
+    - jenkins_deployment_method == 'docker'
+    - jenkins_agent_container_state == 'started'
+  ignore_errors: "{{ ansible_check_mode }}"

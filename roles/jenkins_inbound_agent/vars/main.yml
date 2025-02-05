@@ -1,0 +1,13 @@
+---
+jenkins_agent_states:
+  - "present"
+  - "absent"
+jenkins_agent_deployment_methods:
+  - "docker"
+jenkins_agent_container_image_jdk_versions:
+  - "jdk17"
+  - "jdk21"
+jenkins_agent_container_image_distributions:
+  - "alpine"
+  - "alpine3.21"
+  - "rhel-ubi9"

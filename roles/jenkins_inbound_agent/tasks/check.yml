@@ -1,0 +1,38 @@
+---
+- name: Ensure 'jenkins_agent_state' is valid
+  ansible.builtin.fail:
+    msg: >-2
+      Unsupported jenkins_agent_state '{{ jenkins_agent_state }}'.
+      Supported values are: {{ jenkins_agent_states | join(', ') }}
+  when: jenkins_agent_state not in jenkins_agent_states
+
+- name: Ensure 'jenkins_agent_deployment_method' is valid
+  ansible.builtin.fail:
+    msg: >-2
+      Unsupported jenkins_agent_deployment_method '{{ jenkins_agent_deployment_method }}'.
+      Supported values are: {{ jenkins_agent_deployment_methods | join(', ') }}
+  when: jenkins_agent_deployment_method not in jenkins_agent_deployment_methods
+
+- name: Ensure Jenkins agent JDK version is valid if specified
+  ansible.builtin.fail:
+    msg: >-2
+      Unsupported jenkins_agent_container_image_jdk_version
+      '{{ jenkins_agent_container_image_jdk_version }}' specified!
+      Supported JDK versions are:
+      {{ jenkins_agent_container_image_jdk_versions | join(', ') }}
+  when:
+    - jenkins_agent_container_image_jdk_version is string
+    - jenkins_agent_container_image_jdk_version | length > 0
+    - jenkins_agent_container_image_jdk_version not in jenkins_agent_container_image_jdk_versions
+
+- name: Ensure Jenkins agent distribution is valid if specified
+  ansible.builtin.fail:
+    msg: >-2
+      Unsupported jenkins_agent_container_image_distribution
+      '{{ jenkins_agent_container_image_distribution }}' specified!
+      Supported JDK versions are:
+      {{ jenkins_agent_container_image_distibrutions | join(', ') }}
+  when:
+    - jenkins_agent_container_image_distribution is string
+    - jenkins_agent_container_image_distribution | length > 0
+    - jenkins_agent_container_image_distribution not in jenkins_agent_container_image_distributions

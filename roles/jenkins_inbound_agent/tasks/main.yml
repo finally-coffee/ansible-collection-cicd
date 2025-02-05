@@ -1,0 +1,16 @@
+---
+- name: Ensure required variables are populated (correctly)
+  ansible.builtin.include_tasks:
+    file: "check.yml"
+
+- name: Ensure jenkins-agent user '{{ jenkins_agent_user }}' is {{ jenkins_agent_state }}
+  ansible.builtin.user:
+    name: "{{ jenkins_agent_user }}"
+    state: "{{ jenkins_agent_state }}"
+    system: "{{ jenkins_agent_user_is_system }}"
+    create_home: "{{ jenkins_agent_user_create_home }}"
+  register: jenkins_agent_user_info
+
+- name: Ensure jenkins-agent '{{ jenkins_agent_name }}' is deployed using {{ jenkins_agent_deployment_method }}
+  ansible.builtin.include_tasks:
+    file: "deploy-{{ jenkins_agent_deployment_method }}.yml"

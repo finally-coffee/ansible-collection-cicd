@@ -9,6 +9,7 @@ proxies and artifact registries.
 ## Roles
 
 - [`jenkins`](roles/jenkins/README.md): Deploy [jenkins](https://jenkins.io), the self-proclaimed 'leading open source automation server'.
+- [`jenkins_inbound_agent`](roles/jenkins_inbound_agent/README.md): Deploy Jenkins 'inbound agent', formerly known as 'JNLP agent'.
 
 ## License
 
