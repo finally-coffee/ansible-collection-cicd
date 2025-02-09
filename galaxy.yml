@@ -12,4 +12,7 @@ build_ignore:
   - '*.tar.gz'
 repository: https://git.finally.coffee/finallycoffee/cicd
 issues: https://codeberg.org/finallycoffee/ansible-collection-cicd/issues
-tags: []
+tags:
+  - cicd
+  - ci
+  - cd
