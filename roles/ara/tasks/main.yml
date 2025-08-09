@@ -1,0 +1,18 @@
+---
+- name: Ensure preconditions for ara role are met
+  ansible.builtin.include_tasks:
+    file: "check.yml"
+
+- name: Ensure ara user '{{ ara_user }}' is {{ ara_state }}
+  ansible.builtin.user:
+    name: "{{ ara_user }}"
+    state: "{{ ara_state }}"
+    system: "{{ ara_user_system }}"
+    create_home: "{{ ara_user_create_home }}"
+    groups: "{{ ara_user_groups | default(omit, true) }}"
+    append: "{{ ara_user_append | default(omit, true) }}"
+  register: ara_user_info
+
+- name: Deploy ara api server using {{ ara_deployment_method }}
+  ansible.builtin.include_tasks:
+    file: "deploy-{{ ara_deployment_method }}.yml"

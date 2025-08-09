@@ -1,0 +1,7 @@
+---
+ara_states:
+  - "present"
+  - "absent"
+ara_deployment_methods:
+  - "docker"
+  - "podman"

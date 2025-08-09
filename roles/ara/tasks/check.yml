@@ -1,0 +1,14 @@
+---
+- name: Ensure 'ara_state' is valid
+  ansible.builtin.fail:
+    msg: >-2
+      Unsupported ara_state '{{ ara_state }}'.
+      Supported states are {{ ara_states | map(quote) | join(', ') }}.
+  when: ara_state not in ara_states
+
+- name: Ensure 'ara_deployment_method' is valid
+  ansible.builtin.fail:
+    msg: >-2
+      Unsupported ara_deployment_method '{{ ara_deployment_method }}'.
+      Supported methods are {{ ara_deployment_methods | map(quote) | join(', ') }}.
+  when: ara_deployment_method not in ara_deployment_methods

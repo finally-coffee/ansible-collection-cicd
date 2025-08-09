@@ -1,0 +1,8 @@
+---
+ara_user_system: true
+ara_user_create_home: false
+ara_user_groups: ~
+ara_user_append: ~
+
+ara_user_uid: "{{ ara_user_info.uid | default(ara_user) }}"
+ara_user_gid: "{{ ara_user_info.group | default(ara_user) }}"

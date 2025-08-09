@@ -1,0 +1,5 @@
+---
+ara_user: "ara"
+ara_version: "1.7.2"
+ara_state: "present"
+ara_deployment_method: "docker"

@@ -1,0 +1,28 @@
+---
+ara_container_image_registry: "quay.io"
+ara_container_image_namespace: "recordsansible"
+ara_container_image_repository: "ara-api"
+ara_container_image_name: >-2
+  {{ [
+    ara_container_image_registry | default([], true),
+    ara_container_image_namespace | default([], true),
+    ara_container_image_repository
+  ]  | flatten | join('/') }}
+ara_container_image_tag: ~ #TODO
+ara_container_image: >-2
+  {{ [
+    ara_container_image_name,
+    ara_container_image_tag | default(ara_version, true)
+  ] | join(':') }}
+ara_container_image_source: "pull"
+ara_container_image_force_source: >-2
+  {{ ara_container_image_tag | default(false, true) | bool }}
+ara_container_image_pull: "{{ ara_container_image_source == 'pull' }}"
+ara_container_image_force_pull: >-2
+  {{ ara_container_image_pull and ara_container_image_force_source }}
+ara_container_image_state: "{{ ara_state }}"
+
+ara_container_name: "ara-api"
+ara_container_state: >-2
+  {{ (ara_state == 'present') | ternary('started', 'absent') }}
+

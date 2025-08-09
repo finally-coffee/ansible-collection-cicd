@@ -1,0 +1,12 @@
+---
+- name: Ensure ara container image '{{ ara_container_image }}' is {{ ara_container_image_state }}
+  community.docker.docker_image:
+    name: "{{ ara_container_image }}"
+    state: "{{ ara_container_image_state }}"
+    source: "{{ ara_container_image_source }}"
+    force_source: "{{ ara_container_image_force_source }}"
+
+- name: Ensure ara container '{{ ara_container_name }}' is {{ ara_container_state }}
+  community.docker.docker_container:
+    name: "{{ ara_container_name }}"
+    image: "{{ ara_container_image }}"

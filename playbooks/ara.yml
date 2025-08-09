@@ -1,0 +1,7 @@
+---
+- name: Deploy 'Ara records ansible' API server
+  hosts: "{{ ara_server_hosts | default('ara_server') }}"
+  become: "{{ ara_become | default(false) }}"
+  gather_facts: "{{ ara_gather_facts | default(false) }}"
+  roles:
+    - role: finallycoffee.cicd.ara
