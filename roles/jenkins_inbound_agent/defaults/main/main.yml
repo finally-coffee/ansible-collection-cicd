@@ -5,7 +5,7 @@ jenkins_agent_user_is_system: false
 jenkins_agent_user_uid: "{{ jenkins_agent_user_info.uid }}"
 jenkins_agent_user_gid: "{{ jenkins_agent_user_info.group }}"
 
-jenkins_agent_version: "3327.v868139a_d00e0-6"
+jenkins_agent_version: "3341.v0766d82b_dec0-1"
 
 jenkins_agent_state: "present"
 jenkins_agent_deployment_method: "docker"
