@@ -3,7 +3,7 @@ jenkins_user: "jenkins"
 jenkins_user_is_system: true
 jenkins_user_create_home: false
 jenkins_versions:
-  lts: "2.516.3"
+  lts: "2.528.1"
   weekly: "2.531"
 jenkins_version_channel: "lts"
 jenkins_version: "{{ jenkins_versions[jenkins_version_channel] }}"
