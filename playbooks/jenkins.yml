@@ -1,6 +1,56 @@
 ---
+- import_playbook: finallycoffee.base.lego_certificate
+  when: jenkins_configure_lego_rfc2136 | default(true) | bool
+  vars:
+    target_domains:
+      - "{{ jenkins_domain }}"
+    target_acme_zone: "{{ acme_domain }}"
+    target_acme_account_email: "{{ jenkins_lego_acme_account_email }}"
+    target_dns_server: "{{ dns_server }}"
+    target_dns_additional_records: "{{ jenkins_dns_records }}"
+    target_dns_tsig_key: "{{ dns_tsig_keydata }}"
+    target_hosts: >-2
+      {{ jenkins_lego_hosts | default(jenkins_hosts | default('jenkins')) }}
+    target_gather_facts: >-2
+      {{ jenkins_gather_facts | default(false) | bool }}
+  tags:
+    - jenkins-lego
+
 - name: Install and configure jenkins
-  hosts: "{{ jenkins_hosts | default('jenkins', true) }}"
-  become: "{{ jenkins_become | default(true, true) }}"
+  hosts: "{{ jenkins_hosts | default('jenkins') }}"
+  become: "{{ jenkins_become | default(false) }}"
   roles:
     - role: finallycoffee.cicd.jenkins
+  tasks:
+    - name: Install and configure jenkins agents
+      ansible.builtin.include_role:
+        name: finallycoffee.cicd.jenkins_inbound_agent
+      vars:
+        jenkins_agent_name: "{{ jenkins_agent.name }}"
+        jenkins_agent_secret: "{{ jenkins_agent.secret }}"
+        jenkins_agent_work_dir: >-2
+          {{ jenkins_agent.work_dir | default('/tmp/jenkins', true) }}
+        jenkins_agent_server_url: >-2
+          {{ jenkins_agent.server_url | default('https://' + jenkins_domain) }}
+        jenkins_agent_container_image_distribution: >-2
+          {{ jenkins_agent.distribution | default(false, true) }}
+        jenkins_agent_container_image_jdk_version: >-2
+          {{ jenkins_agent.jdk_version | default(false, true) }}
+      loop: "{{ jenkins_agents | default([]) }}"
+      loop_control:
+        loop_var: "jenkins_agent"
+        label: "{{ jenkins_agent.name }}"
+
+- import_playbook: finallycoffee.base.caddy_reverse_proxy
+  when: jenkins_configure_caddy_reverse_proxy | default(false)
+  vars:
+    caddy_site_name: "{{ jenkins_domain }}"
+    caddy_reverse_proxy_backend_addr: "http://{{ jenkins_host_bind_addr }}"
+    target_hosts: >-2
+      {{ jenkins_caddy_hosts | default(jenkins_hosts | default('jenkins')) }}
+    target_become: >-2
+      {{ jenkins_caddy_become | default(jenkins_become | default(true, true)) }}
+    target_gather_facts: >-2
+      {{ jenkins_caddy_gather_facts | default(false) }}
+  tags:
+    - jenkins-caddy
