@@ -1,0 +1,40 @@
+---
+- import_playbook: finallycoffee.base.lego_certificate
+  vars:
+    target_domains: "{{ nexus_lego_cert_domains }}"
+    target_acme_zone: "{{ acme_domain }}"
+    target_acme_account_email: "{{ nexus_lego_acme_account_email }}"
+    target_dns_server: "{{ dns_server }}"
+    target_dns_tsig_key: "{{ dns_tsig_keydata }}"
+    target_dns_additional_records: "{{ nexus_dns_records }}"
+    target_hosts: >-2
+      {{ nexus_lego_hosts | default(nexus_hosts | default('nexus')) }}
+    target_become: >-2
+      {{ nexus_lego_become | default(nexus_become | default(false)) }}
+    target_gather_facts: "{{ nexus_lego_gather_facts | default(false) }}"
+  tags:
+    - nexus
+    - nexus-lego
+
+- name: Install nexus
+  hosts: "{{ nexus_hosts | default('nexus') }}"
+  become: "{{ nexus_become | default(false) }}"
+  gather_facts: "{{ nexus_gather_facts | default(false) }}"
+  roles:
+    - role: finallycoffee.cicd.nexus
+      tags:
+        - nexus
+
+- import_playbook: finallycoffee.base.caddy_reverse_proxy
+  when: nexus_configure_caddy_reverse_proxy | default(false)
+  vars:
+    caddy_site_name: "{{ nexus_domain }}"
+    caddy_site_config_override: "{{ nexus_http_routing }}"
+    target_hosts: >-2
+      {{ nexus_caddy_hosts | default(nexus_hosts | default('nexus')) }}
+    target_become: >-2
+      {{ nexus_caddy_become | default(nexus_become | default(true, true)) }}
+    target_gather_facts: >-2
+      {{ nexus_caddy_gather_facts | default(false) }}
+  tags:
+    - nexus-caddy

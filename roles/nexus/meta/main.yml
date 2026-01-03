@@ -1,0 +1,9 @@
+---
+allow_duplicates: true
+dependencies: []
+galaxy_info:
+  role_name: nexus
+  description: Ansible role to deploy sonatype nexus
+  galaxy_tags:
+    - nexus
+    - nexus3

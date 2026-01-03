@@ -1,0 +1,25 @@
+---
+- name: Ensure container image '{{ nexus_container_image }}' is {{ nexus_container_image_state }}
+  community.docker.docker_image:
+    name: "{{ nexus_container_image }}"
+    state: "{{ nexus_container_image_state }}"
+    source: "{{ nexus_container_image_source }}"
+    force_source: "{{ nexus_container_image_force_source }}"
+  register: nexus_container_image_info
+  until: nexus_container_image_info is success
+  retries: 5
+  delay: 3
+
+- name: Ensure container '{{ nexus_container_name }}' is {{ nexus_container_state }}
+  community.docker.docker_container:
+    name: "{{ nexus_container_name }}"
+    image: "{{ nexus_container_image }}"
+    state: "{{ nexus_container_state }}"
+    env: "{{ nexus_container_env | default(omit, true) }}"
+    user: "{{ nexus_container_user | default(omit, true) }}"
+    ports: "{{ nexus_container_ports | default(omit, true) }}"
+    labels: "{{ nexus_container_labels | default(omit, true) }}"
+    volumes: "{{ nexus_container_all_volumes }}"  
+    networks: "{{ nexus_container_networks | default(omit, true) }}"
+    etc_hosts: "{{ nexus_container_etc_hosts | default(omit, true) }}"
+    restart_policy: "{{ nexus_container_restart_policy | default(omit, true) }}"

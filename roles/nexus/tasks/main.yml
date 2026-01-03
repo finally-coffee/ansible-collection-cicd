@@ -1,0 +1,24 @@
+---
+- name: Ensure state is valid
+  ansible.builtin.fail:
+    msg: >-2
+      Unsupported nexus_state '{{ nexus_state }}'! Supported
+      states are {{ nexus_states | join(', ') }}
+  when: nexus_state not in nexus_states
+
+- name: Ensure deployment method is valid
+  ansible.builtin.fail:
+    msg: >-2
+      Unsupported nexus_deployment_method '{{ nexus_deployment_method }}'!
+      Supported deployment methods are {{ nexus_deployment_methods | join(', ') }}
+  when: nexus_deployment_method not in nexus_deployment_methods
+
+- name: Ensure nexus base path is {{ nexus_state }}
+  ansible.builtin.file:
+    path: "{{ nexus_base_path }}"
+    state: "{{ nexus_state_is_present | ternary('directory', 'absent') }}"
+    mode: "0750"
+
+- name: Deploy nexus using {{ nexus_deployment_method }}
+  ansible.builtin.include_tasks:
+    file: "deploy-{{ nexus_deployment_method }}.yml"

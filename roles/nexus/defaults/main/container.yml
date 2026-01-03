@@ -1,0 +1,44 @@
+---
+nexus_container_image_registry: "docker.io"
+nexus_container_image_namespace: "sonatype"
+nexus_container_image_repository: "nexus3"
+nexus_container_image_flavour: "java17"
+nexus_container_image_tag: ~
+nexus_container_image_name: >-2
+  {{ [
+    nexus_container_image_registry | default([], true),
+    nexus_container_image_namespace | default([], true),
+    nexus_container_image_repository
+  ] | flatten | join('/') }}
+nexus_container_image_source: pull
+nexus_container_image_force_source: >-2
+  {{ nexus_container_image_tag | ansible.builtin.type_debug != 'NoneType' }}
+nexus_container_image_pull: >-2
+  {{ nexus_container_image_source == 'pull' }}
+nexus_container_image_force_pull: >-2
+  {{ nexus_container_image_force_source and nexus_container_image_pull }}
+nexus_container_image_qualifier: >-2
+  {{ (nexus_container_image_tag | ansible.builtin.type_debug != 'NoneType') | ternary(
+      nexus_container_image_tag,
+      [ nexus_version, nexus_container_image_flavour ] | join('-')
+    ) }}
+nexus_container_image: >-2
+  {{ nexus_container_image_name }}:{{ nexus_container_image_qualifier }}
+nexus_container_image_state: "{{ nexus_state }}"
+
+nexus_container_name: "nexus"
+nexus_container_env: ~
+nexus_container_user: ~
+nexus_container_ports: ~
+nexus_container_labels: ~
+nexus_container_volumes: ~
+nexus_container_networks: ~
+nexus_container_etc_hosts: ~
+nexus_container_restart_policy: "on-failure"
+nexus_container_default_volumes:
+  - "{{ nexus_base_path }}:/nexus-data:z"
+nexus_container_all_volumes: >-2
+  {{ nexus_container_default_volumes | default([], true)
+  + nexus_container_volumes | default([], true) }}
+nexus_container_state: >-2
+  {{ nexus_state_is_present | ternary('started', 'absent') }}

@@ -1,0 +1,10 @@
+---
+nexus_states:
+  - "present"
+  - "absent"
+nexus_state_is_present: >-2
+  {{ nexus_state == 'present' }}
+
+nexus_deployment_methods:
+  - "docker"
+  - "podman"

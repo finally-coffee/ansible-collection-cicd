@@ -1,0 +1,6 @@
+---
+nexus_version: "3.69.0"
+nexus_base_path: "/var/lib/nexus"
+
+nexus_state: "present"
+nexus_deployment_method: "docker"
