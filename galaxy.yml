@@ -6,7 +6,7 @@ authors:
   - transcaffeine <transcaffeine@finally.coffee>
 description: Services for continous integration and continous delivery
 dependencies:
-  "community.docker": "^4.0.0"
+  "community.docker": ">=4.0.0"
 license_file: LICENSE.md
 build_ignore:
   - '*.tar.gz'
