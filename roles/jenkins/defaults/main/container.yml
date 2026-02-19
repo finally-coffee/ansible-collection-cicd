@@ -33,7 +33,7 @@ jenkins_container_image_source: "pull"
 jenkins_container_image_force_source: >-2
   {{ jenkins_container_image_tag | default(true, true) }}
 jenkins_container_image_tag: ~
-jenkins_container_image_flavour: "jdk17"
+jenkins_container_image_flavour: "jdk21"
 
 jenkins_container_env: ~
 jenkins_container_user: >-2
